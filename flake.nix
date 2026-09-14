@@ -406,6 +406,13 @@
               # ln -sf "${pkgs.gdb}/bin/gdb" ./.vscode/gdb
               # NVIDIA 驱动库（PyTorch 需要 libcuda.so.1）
               export LD_LIBRARY_PATH=/run/opengl-driver/lib:$LD_LIBRARY_PATH
+              # Filament 的 samples 用内置 SDL2 + GL/Vulkan 后端，这些库是运行时
+              # dlopen 的（二进制里没有 DT_NEEDED），必须放进 LD_LIBRARY_PATH，
+              # 否则 SDL_Init 报 "No available video device"。
+              export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath (with pkgs; [
+                libX11 libXext libXfixes libXi libXcursor libXrandr libXrender
+                libxkbcommon libGL vulkan-loader
+              ])}:$LD_LIBRARY_PATH
               # 添加系统 opencv4Full 到 PYTHONPATH（优先于 venv，有 AV1 支持）
               export PYTHONPATH=${pkgs.python314Packages.opencv4Full}/lib/python3.14/site-packages:$PYTHONPATH
               # Vulkan 验证层路径
