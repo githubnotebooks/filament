@@ -26,6 +26,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>
+
 class MaterialLexer: public ::testing::Test {
 protected:
     MaterialLexer() = default;

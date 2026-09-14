@@ -249,10 +249,15 @@ void __asan_unpoison_memory_region(void const volatile *addr, size_t size);
 #if defined(__clang__) && !defined(SWIG)
 // We only enable Clang thread safety annotations if standard std::mutex annotations
 // are manually activated via the _LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS define,
+// AND the standard library in use is libc++ (detected via its private <__config>
+// header; utils/compiler.h only includes <stddef.h>, which is the plain C header and
+// defines neither __GLIBCXX__ nor _LIBCPP_VERSION). Under libstdc++, std::mutex is
+// never annotated with the 'capability' attribute, so any UTILS_GUARDED_BY(x) member
+// guarded by a std::mutex-derived lock would fail to compile.
 // AND multi-threading is enabled (UTILS_HAS_THREADING is not 0).
 // This prevents compile failures on single-threaded targets or builds where standard
 // annotations are disabled by default in the platform's standard library headers.
-#if defined(_LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS) && UTILS_HAS_THREADING
+#if defined(_LIBCPP_ENABLE_THREAD_SAFETY_ANNOTATIONS) && __has_include(<__config>) && UTILS_HAS_THREADING
 #define UTILS_THREAD_ANNOTATION_ATTRIBUTE(x)   __attribute__((x))
 #else
 #define UTILS_THREAD_ANNOTATION_ATTRIBUTE(x)

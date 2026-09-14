@@ -153,8 +153,13 @@
             ];
 
             # 编译器和调试工具
+            # 注意：必须用 clang 而不是 clangNoLibcxx。
+            # clangNoLibcxx 的 wrapper 会加 -nostdlib++（链接时不带任何 C++ 标准库），
+            # 而编译用的是 gcc 的 libstdc++ 头文件，结果是大量 undefined reference。
+            # Linux 上普通的 llvmPackages_XX.clang 默认链 gcc 的 libstdc++（不是 libc++），
+            # 与 nixpkgs 里其他 C++ 库（boost/fmt 等都是 libstdc++ ABI）兼容。
             compilers = with pkgs; [
-              llvmPackages_22.clangNoLibcxx
+              llvmPackages_22.clang
               gcc16
               gdb
             ];

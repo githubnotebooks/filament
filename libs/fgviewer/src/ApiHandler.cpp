@@ -17,7 +17,7 @@
 
 #include "ApiHandler.h"
 
-#include <__chrono/duration.h>
+#include <chrono>
 #include <fgviewer/DebugServer.h>
 #include <fgviewer/JsonWriter.h>
 

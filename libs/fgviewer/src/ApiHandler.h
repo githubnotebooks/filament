@@ -21,6 +21,9 @@
 
 #include <CivetServer.h>
 
+#include <condition_variable>
+#include <mutex>
+
 namespace filament::fgviewer {
 
 class DebugServer;
